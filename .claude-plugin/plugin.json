@@ -1,0 +1,47 @@
+{
+  "name": "vault-panel",
+  "version": "0.8.0",
+  "description": "Claude Code の右側に、使用量、Google カレンダーの予定、Obsidian Vault の Todo を色と枠で常時表示するペイン。",
+  "author": {
+    "name": "R76H94"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "vaultPath": {
+      "type": "string",
+      "title": "Vault の場所",
+      "description": "Obsidian Vault のフォルダの絶対パス（例：C:/Users/you/ObsidianVaults/my-vault）",
+      "required": true
+    },
+    "todoDir": {
+      "type": "string",
+      "title": "Todo のフォルダ",
+      "description": "Vault 内の Todo フォルダ。直下の .md 1件が Todo 1件（フロントマター title、status、due、priority）",
+      "default": "todo"
+    },
+    "worklogFile": {
+      "type": "string",
+      "title": "作業記録",
+      "description": "「次」に出す作業記録のファイル（Vault 内）。最初の ## の見出しの未完了 - [ ] を出す。空なら出さない",
+      "default": ""
+    },
+    "diaryDir": {
+      "type": "string",
+      "title": "日記のフォルダ",
+      "description": "YYYY/MM/YYYY-MM-DD.md の日記のフォルダ（Vault 内）。## 振り返り がなければ知らせる。空なら知らせない",
+      "default": ""
+    },
+    "diaryScript": {
+      "type": "string",
+      "title": "日記の下書きスクリプト",
+      "description": "1日の最初の起動で python で実行するスクリプト（Vault 内）。空なら実行しない",
+      "default": ""
+    },
+    "calendarServer": {
+      "type": "string",
+      "title": "カレンダーのコネクタ名",
+      "description": "Google Calendar の MCP サーバー名",
+      "default": "claude.ai Google Calendar"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "claude-vault-panel",
+  "owner": { "name": "R76H94" },
+  "plugins": [{ "name": "vault-panel", "source": "./" }]
+}
