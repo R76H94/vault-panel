@@ -6,6 +6,10 @@ A Claude Code side pane that shows your rate-limit usage, today's Google Calenda
 
 ## 表示
 
+<img src="images/panel.png" alt="vault-panel の表示例（架空のデータ）" width="320">
+
+（架空のデータで描いた例です。実際の色は端末のテーマに合わせて変わります）
+
 - 使用量：5時間と週の枠を横棒で1行に。その下の行に回復の時刻（5時間枠は時刻、週の枠は日付）をいつも出す。70%で黄、90%で赤になる（枠の色も変わる）
 - 予定：今日（終わった予定は薄く）、明日、今週の件数
 - Todo：〆切の近い順。超過は赤、今日〆切は黄。入りきらない分は「ほか N件」
