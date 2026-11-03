@@ -1,5 +1,15 @@
 {
-  "name": "claude-vault-panel",
-  "owner": { "name": "R76H94" },
-  "plugins": [{ "name": "vault-panel", "source": "./" }]
+  "name": "vault-panel",
+  "owner": {
+    "name": "R76H94"
+  },
+  "plugins": [
+    {
+      "name": "vault-panel",
+      "source": "./"
+    }
+  ],
+  "metadata": {
+    "description": "vault-panel: a Claude Code mod with a side pane for usage, Google Calendar events and Markdown Todos."
+  }
 }
