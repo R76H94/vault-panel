@@ -283,10 +283,6 @@ function row(key, text, style = {}) {
 
 const USAGE_BAR_CELLS = 6;
 
-function usageLabel(limit) {
-  return { five_hour: "5時間", seven_day: "週" }[limit.kind] ?? limit.kind;
-}
-
 function usageShortLabel(limit) {
   return { five_hour: "5h", seven_day: "週" }[limit.kind] ?? limit.kind;
 }
@@ -297,8 +293,21 @@ function usageState(percent) {
   return { color: COLOR.usageOk };
 }
 
-// One row of bars: "5h ██░░░░ 23%  週 ██░░░░ 40%". A limit at 70% or more adds a row
-// with its reset time.
+// Terminal cells: wide (CJK) characters take two.
+function cellWidth(text) {
+  return [...text].reduce((sum, ch) => sum + (ch.codePointAt(0) >= 0x2e80 ? 2 : 1), 0);
+}
+
+function padCells(text, width) {
+  return text + " ".repeat(Math.max(0, width - cellWidth(text)));
+}
+
+// Each limit takes a fixed-width column, so the reset row lines up under the bars:
+//   5h ██░░░░  23%  週 ██░░░░  40%
+//   5h 18:30         週 11/5木
+const USAGE_COLUMN_CELLS = 2 + 1 + USAGE_BAR_CELLS + 1 + 4;
+const USAGE_GAP = "  ";
+
 function usageRows() {
   if (rateLimits.length === 0) return [row("usage-bars", "使用量 応答後に表示", { dim: true })];
   const segments = rateLimits.flatMap((limit, index) => {
@@ -306,19 +315,29 @@ function usageRows() {
     const filled = Math.round((percent / 100) * USAGE_BAR_CELLS);
     const state = usageState(percent);
     return [
-      { text: `${index ? "  " : ""}${usageShortLabel(limit)} ` },
+      { text: `${index ? USAGE_GAP : ""}${usageShortLabel(limit)} ` },
       { text: "█".repeat(filled), color: state.color },
       { text: "░".repeat(USAGE_BAR_CELLS - filled), dim: true },
-      { text: ` ${Math.round(percent)}%`, ...(percent >= USAGE_WARN ? state : {}) },
+      { text: ` ${`${Math.round(percent)}%`.padStart(4)}`, ...(percent >= USAGE_WARN ? state : {}) },
     ];
   });
   const rows = [{ key: "usage-bars", segments }];
-  rateLimits.forEach((limit, index) => {
-    const until = resetTime(limit);
-    if (limit.percentUsed < USAGE_WARN || !until) return;
-    const alert = limit.percentUsed >= USAGE_ALERT;
-    rows.push(row(`usage-reset${index}`, `${alert ? "!" : ""}${usageLabel(limit)} ${until}に回復`, usageState(limit.percentUsed)));
-  });
+  // Always a second row with every reset time, each under its own bar.
+  // A limit at 70% or more is colored (90% or more also gets "!" after the time).
+  if (rateLimits.some((limit) => resetTime(limit))) {
+    const last = rateLimits.length - 1;
+    const resetSegments = rateLimits.map((limit, index) => {
+      const until = resetTime(limit);
+      const high = limit.percentUsed >= USAGE_WARN;
+      const alert = limit.percentUsed >= USAGE_ALERT;
+      const body = until ? `${usageShortLabel(limit)} ${until}${alert ? "!" : ""}` : "";
+      return {
+        text: `${index ? USAGE_GAP : ""}${index < last ? padCells(body, USAGE_COLUMN_CELLS) : body}`,
+        ...(high ? usageState(limit.percentUsed) : { dim: true }),
+      };
+    });
+    rows.push({ key: "usage-reset", segments: resetSegments });
+  }
   return rows;
 }
 
